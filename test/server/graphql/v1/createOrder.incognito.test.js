@@ -63,9 +63,9 @@ describe('server/graphql/v1/createOrder.incognito', () => {
 
   before(async () => {
     await utils.resetTestDB();
-    ({ user: adminUser } = await store.newUser('new admin user', { firstName: 'admin', lastName: 'user' }));
-    ({ user: backerUser } = await store.newUser('new backerUser', { firstName: 'backer', lastName: 'user' }));
-    ({ user } = await store.newUser('new user', { firstName: 'u', lastName: 'ser' }));
+    ({ user: adminUser } = await store.newUser('new admin user', { name: 'admin user' }));
+    ({ user: backerUser } = await store.newUser('new backerUser', { name: 'backer user' }));
+    ({ user } = await store.newUser('new user', { name: 'u ser' }));
     incognitoCollective = await store.newIncognitoProfile(user);
     ({ hostCollective, collective, hostAdmin } = await store.newCollectiveWithHost('test', 'USD', 'USD', 10));
     await collective.addUserWithRole(adminUser, 'ADMIN');

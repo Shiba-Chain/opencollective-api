@@ -158,20 +158,6 @@ export const UserType = new GraphQLObjectType({
           return user.username;
         },
       },
-      firstName: {
-        type: GraphQLString,
-        deprecationReason: '2021-09-24: Use "name"',
-        resolve(user) {
-          return user.firstName;
-        },
-      },
-      lastName: {
-        type: GraphQLString,
-        deprecationReason: '2021-09-24: Use "name"',
-        resolve(user) {
-          return user.lastName;
-        },
-      },
       name: {
         type: GraphQLString,
         resolve(user) {

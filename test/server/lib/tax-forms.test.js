@@ -81,24 +81,16 @@ describe('server/lib/tax-forms', () => {
 
   const usersData = [
     {
-      firstName: 'Xavier',
-      lastName: 'Damman',
       email: 'xdamman@opencollective.com',
       legalName: 'Mr. Legal Name',
     },
     {
-      firstName: 'Pia',
-      lastName: 'Mancini',
       email: 'pia@opencollective.com',
     },
     {
-      firstName: 'Piet',
-      lastName: 'Geursen',
       email: 'piet@opencollective.com',
     },
     {
-      firstName: 'Mix',
-      lastName: 'Irving',
       email: 'mix@opencollective.com',
     },
     {
