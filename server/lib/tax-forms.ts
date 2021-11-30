@@ -1,6 +1,6 @@
 import config from 'config';
 import HelloWorks from 'helloworks-sdk';
-import { truncate } from 'lodash';
+import { set, truncate } from 'lodash';
 
 import { US_TAX_FORM_THRESHOLD, US_TAX_FORM_THRESHOLD_FOR_PAYPAL } from '../constants/tax-form';
 import models, { Op } from '../models';
@@ -120,17 +120,21 @@ export async function sendHelloWorksUsTaxForm(
     },
   };
 
-  const saveDocumentStatus = status => {
+  const saveDocumentStatus = (status, workflowId = undefined) => {
     return models.LegalDocument.findOrCreate({
       where: { documentType: LEGAL_DOCUMENT_TYPE.US_TAX_FORM, year, CollectiveId: account.id },
     }).then(([doc]) => {
-      doc.requestStatus = status;
-      return doc.save();
+      const data = { ...doc.data };
+      if (workflowId) {
+        set(data, 'helloWorks.workflowId', workflowId);
+      }
+
+      return doc.update({ status, data });
     });
   };
 
   try {
-    await client.workflowInstances.createInstance({
+    const { instance } = await client.workflowInstances.createInstance({
       callbackUrl,
       workflowId,
       documentDelivery: true,
@@ -145,7 +149,9 @@ export async function sendHelloWorksUsTaxForm(
       },
     });
 
-    return saveDocumentStatus(LEGAL_DOCUMENT_REQUEST_STATUS.REQUESTED);
+    await saveDocumentStatus(LEGAL_DOCUMENT_REQUEST_STATUS.REQUESTED, instance.id);
+    const documentLink = `https://app.helloworks.com/entry/view_instance/${instance.id}`;
+    // TODO: Send email
   } catch (error) {
     logger.error(`Failed to initialize tax form for account #${account.id} (${mainUser.email})`, error);
     return saveDocumentStatus(LEGAL_DOCUMENT_REQUEST_STATUS.ERROR);
@@ -155,3 +161,14 @@ export async function sendHelloWorksUsTaxForm(
 export const amountsRequireTaxForm = (paypalTotal: number, otherTotal: number): boolean => {
   return otherTotal >= US_TAX_FORM_THRESHOLD || paypalTotal >= US_TAX_FORM_THRESHOLD_FOR_PAYPAL;
 };
+
+setTimeout(async () => {
+  const client = new HelloWorks({
+    apiKeyId: config.get('helloworks.key'),
+    apiKeySecret: config.get('helloworks.secret'),
+  });
+
+  const workflowId = config.get('helloworks.workflowId');
+  const account = await models.Collective.findOne({ where: { slug: 'betree' } });
+  await sendHelloWorksUsTaxForm(client, account, 2020, 'https://smee.io/xxxxxx', workflowId);
+}, 3000);
