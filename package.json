@@ -137,7 +137,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-jest-snapshot": "^2.0.0",
     "codecov": "^3.8.2",
-    "commitizen": "^4.2.4",
+    "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.1.0",
     "eslint-config-opencollective": "^3.0.3",
